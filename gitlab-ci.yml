@@ -1,0 +1,19 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  only:
+    - main
+
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+
+  script:
+    - ssh -o StrictHostKeyChecking=no ec2-user@$SERVER_IP "
+      cd /var/www/html &&
+      sudo git pull &&
+      sudo systemctl restart httpd
+      "
